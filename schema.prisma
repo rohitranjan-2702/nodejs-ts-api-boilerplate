@@ -1,0 +1,127 @@
+datasource db {
+    provider = "postgresql"
+    url      = env("DATABASE_URL")
+}
+
+generator client {
+    provider = "prisma-client-js"
+}
+
+model User {
+    id                String       @id
+    createdAt         DateTime     @default(now())
+    updatedAt         DateTime     @updatedAt
+    email             String       @unique
+    firstName         String
+    lastName          String
+    role              Role         @default(USER)
+    phoneNumber       Int
+    uid               String?
+    password          String
+    subscription      Subscription @default(FREE)
+    ipAddress         String
+    emailNotification Boolean      @default(false)
+    emailVerified     Boolean      @default(false)
+    isBlocked         Boolean      @default(false)
+    profileImage      String
+    companyName       String?
+    title             String?
+    location          String?
+
+    userDetail     UserDetails?
+    webCardDetails WebCard[]
+}
+
+model UserDetails {
+    id        Int      @id @default(autoincrement())
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+    published Boolean  @default(false)
+    title     String   @db.VarChar(255)
+
+    user   User   @relation(fields: [userId], references: [id])
+    userId String @unique
+}
+
+model WebCard {
+    id     String @id
+    cardId String @unique
+
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+
+    mainButtonType   MainButtonType
+    mainButtonAction String
+    mainButtonTitle  String
+
+    whatsappMessage String
+    whatsappNumber  String
+
+    branding Boolean @default(true)
+
+    themePhotoUrl           String
+    themePhotoStyleRing     Boolean
+    themePhotoStyleVerified Boolean
+    themePhotoStyle         Boolean // 0 ->circle, 1 -> square
+    themePhotoBannerUrl     String[]
+    themeId                 String
+    themeBaseColour         String
+    themeBackgroundColour   String[]
+    themeColour             String[]
+    textColour              String[]
+    isDarkMode              Boolean
+    headerStyle             String
+    font                    String
+
+    isServiceTabVisible Boolean
+
+    // customDomain
+    mxRecord String
+    cname    String
+    aRecord  String
+
+    isCardLocked Boolean
+    cardLockPin  String
+
+    isCardConnectVisible  Boolean
+    enableExchangeContact Boolean
+
+    isFacebookChatVisible Boolean
+    facebookPageId        String
+
+    isCalendlyButtonVisible Boolean
+    calendlyLink            String
+    calendlyButtonTitle     String
+
+    indexingInSeo       Boolean
+    metadataTitle       String
+    metadataDescription String
+
+    copyrightText     String
+    sensitiveMaterial Int // age
+    cardLanguauge     String
+
+    user   User   @relation(fields: [userId], references: [id])
+    userId String @unique
+}
+
+enum Role {
+    USER
+    RESELLER
+    ADMIN
+}
+
+enum Subscription {
+    PREMIUM
+    TEAMS
+    RESELLER
+    FREE
+}
+
+enum MainButtonType {
+    CALL
+    MAIL
+    LINK
+    PAYMENT
+    OTHER
+}
